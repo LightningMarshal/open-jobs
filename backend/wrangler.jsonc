@@ -32,6 +32,8 @@
 	},
 	// Static data for the local-first client: tree manifest, group files, parquet. Served via GET /data/*.
 	"r2_buckets": [{ "binding": "DATA", "bucket_name": "jobscream-data" }],
+	// Stopped 2026-10-10: an empty list is what removes the crons already registered (a missing block leaves them).
+	"triggers": { "crons": [] },
 	"vars": {
 		// ADMIN_TOKEN is a *secret* (`wrangler secret put ADMIN_TOKEN`), deliberately not a var: a var here would shadow the secret and the admin endpoints fail closed without it.
 		// "on" = resolve the company behind every board automatically after its first successful fetch
