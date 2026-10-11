@@ -5,7 +5,8 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "backend",
-	"main": "src/index.ts",
+	// Stopped 2026-10-10: src/shutdown.ts keeps the data route and stubs every Durable Object; src/index.ts is the real Worker.
+	"main": "src/shutdown.ts",
 	"compatibility_date": "2026-08-26",
 	"migrations": [
 		{ "tag": "v1", "new_sqlite_classes": ["MyDurableObject"] },
@@ -16,14 +17,6 @@
 		{ "tag": "v6", "new_sqlite_classes": ["Stats"] },
 		{ "tag": "v7", "new_sqlite_classes": ["Dedupe"] },
 		{ "tag": "v8", "new_sqlite_classes": ["Consolidate"] }
-	],
-	// The Worker bound to itself: the consolidation container reaches the API through an outbound handler on
-	// http://worker.internal (containers cannot reach *.workers.dev hostnames), which forwards over this binding.
-	"services": [{ "binding": "SELF", "service": "backend" }],
-	// The consolidation container (CONTAINER.md): the same image as the laptop (backend/Dockerfile, built for
-	// linux/amd64 and pushed by `wrangler deploy`), the largest self-serve instance, one at a time.
-	"containers": [
-		{ "class_name": "Consolidate", "image": "./Dockerfile", "image_build_context": "..", "instance_type": "standard-4", "max_instances": 6 }  // 1 chain + up to 5 fan-out workers (stage.py PARQUET_WORKERS)
 	],
 	"durable_objects": {
 		"bindings": [
@@ -39,13 +32,6 @@
 	},
 	// Static data for the local-first client: tree manifest, group files, parquet. Served via GET /data/*.
 	"r2_buckets": [{ "binding": "DATA", "bucket_name": "jobscream-data" }],
-	// The search page (../site/index.html, one self-contained file). Served at / ; every API route is
-	// listed here so the Worker sees it first and the assets layer never shadows an endpoint.
-	"assets": { "directory": "../site", "binding": "ASSETS", "run_worker_first": ["/", "/status", "/probe", "/embed", "/jd", "/enrich", "/enrich/*", "/ideas", "/data/*", "/ats", "/sync", "/sync/*", "/snapshots", "/fetch-all", "/backfill", "/boards/*", "/jobs/*", "/export/*", "/comeet/*"] },
-	"triggers": {
-		// Daily sweep that (re)arms every board's alarm. Boards fetch at their own fixed slot.
-		"crons": ["0 0 * * *", "0 10 * * *"]  // 10:00 UTC: the missed-publish check (checkPublish in index.ts)
-	},
 	"vars": {
 		// ADMIN_TOKEN is a *secret* (`wrangler secret put ADMIN_TOKEN`), deliberately not a var: a var here would shadow the secret and the admin endpoints fail closed without it.
 		// "on" = resolve the company behind every board automatically after its first successful fetch

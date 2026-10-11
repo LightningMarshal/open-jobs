@@ -6,11 +6,15 @@
 </p>
 
 <p align="center">
-  <img alt="3.1 million open postings" src="https://img.shields.io/badge/open_postings-3%2C125%2C843-177A45">
-  <img alt="65,000 career sites crawled daily" src="https://img.shields.io/badge/career_sites-65%2C000_crawled_daily-152019">
-  <img alt="free, no account" src="https://img.shields.io/badge/free-no_account-177A45">
+  <img alt="no longer running, since 10 October 2026" src="https://img.shields.io/badge/status-no_longer_running_(10_Oct_2026)-8a1c1c">
+  <img alt="last snapshot 5 October 2026" src="https://img.shields.io/badge/last_snapshot-5_Oct_2026-152019">
   <img alt="GitHub stars" src="https://img.shields.io/github/stars/elliottdehn/open-jobs?color=152019">
 </p>
+
+> **Open Jobs is no longer running.** The crawler, the nightly build and the search page were shut down on
+> 10 October 2026. Running them cost more than a free project with no business model could carry. The last
+> snapshot, built 5 October 2026, stays downloadable under [Take the data](#take-the-data), and the code is
+> here for anyone who wants to run their own. Everything below describes the project as it ran.
 
 <p align="center">
   3.1 million current job postings, crawled every day from 65,000 company career sites,<br>
@@ -19,16 +23,9 @@
 </p>
 
 <p align="center">
-  <a href="https://backend.dehnbostele.workers.dev/"><b>Try it in your browser</b></a>
-  &nbsp;·&nbsp;
-  <a href="#use-it-with-your-agent">Use it with your agent</a>
-  &nbsp;·&nbsp;
   <a href="#take-the-data">Take the data</a>
-</p>
-
-<p align="center">
-  <a href="https://forms.gle/S1mZXwLZ1ZzrXbv37"><img alt="Support: tell me what you're building" src=".github/assets/support.svg" width="372"></a><br>
-  <sub>Building something on this? Say what. If you need it there every morning, say so, and I'll tell you honestly what I can commit to.</sub>
+  &nbsp;·&nbsp;
+  <a href="#how-it-works">How it worked</a>
 </p>
 
 <br>
@@ -58,16 +55,16 @@ Fresh is what you see by default. The rest is one click away, labelled.
 
 ## Try it in your browser
 
-**[backend.dehnbostele.workers.dev](https://backend.dehnbostele.workers.dev/)**
-
-Type a job title, where you want to work, and a few sentences about the job you want. The page
+The search page at `backend.dehnbostele.workers.dev` is offline since 10 October 2026; the address now serves a
+notice and the data files. This is how it worked. Type a job title, where you want to work, and a few sentences about the job you want. The page
 writes the posting, finds its neighborhood among 3.1 million openings, and shows you the fresh
 ones first. Say yes or no; a yes pulls in more jobs like it, and Rerank re-sorts the list when you
 ask, never underneath you. No account. Nothing except what you type is sent to the server.
 
 ## Use it with your agent
 
-Paste this into Claude Code, Codex, Cursor, or whatever you use:
+The agent workflow needed the live index (`/embed` and the nightly groups) and stopped working with the shutdown
+on 10 October 2026. The description below is kept for the record. Paste this into Claude Code, Codex, Cursor, or whatever you use:
 
 ```
 Clone https://github.com/elliottdehn/open-jobs to help me find a job.
@@ -125,15 +122,17 @@ open-jobs, switch the mode selector from **Chat** to **Work** and paste the same
 3. **Search, locally.** Your description of the job you want is embedded once, its nearest groups
    come down to your machine, and everything after that, ranking, labels, learning, happens there.
 
-Around 11,000 lines of code. Roughly a dollar a day to run.
+Around 11,000 lines of code.
 Design and the daily workflow: [`backend/DOCS.md`](backend/DOCS.md). Enrichment fields:
 [`backend/FIELDS.md`](backend/FIELDS.md).
 
 ## Take the data
 
-**One link:** [open-jobs-latest.tar](https://backend.dehnbostele.workers.dev/data/exports/open-jobs-latest.tar), about 13 GB, every open posting with
-its full description, a 1536-dim embedding, and company fields, as one parquet file per applicant tracking
-system, rebuilt nightly. Resumes if interrupted.
+The snapshot is frozen at the last nightly build, 5 October 2026, and stays downloadable while the bucket is paid for.
+
+**One link:** [open-jobs-latest.tar](https://backend.dehnbostele.workers.dev/data/exports/open-jobs-latest.tar), about 31 GB, every posting open on
+5 October 2026 with its full description, a 1536-dim embedding, and company fields, as one parquet file per
+applicant tracking system. Resumes if interrupted.
 
 **Or three commands,** which also give you a query shell over it:
 
@@ -161,7 +160,8 @@ timestamps, straight from the crawler's records.
 
 ### Mirror the search index
 
-Several people already copy the whole search index every night. This is the contract.
+Several people copied the whole search index every night while it ran. This was the contract; the files of the
+last build are still there, and nothing under `/data/` will change again.
 
 **What it is.** Three kinds of static file under [`/data/`](https://backend.dehnbostele.workers.dev/data/):
 
